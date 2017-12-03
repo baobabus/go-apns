@@ -27,7 +27,7 @@ management of HTTP/2 connections and controlling concurrent HTTP/2 streams.
 1. `Submitter` picks up push requests from the processing queue
 2. `Submitter` forwards requests to internal dispatch channel
 3. Each `streamer` maintains a single HTTP/2 connection to APN service
-4. One of the `streamer`s picks up a push request from the dispatch queue
+4. One of the `streamers` picks up a push request from the dispatch queue
 5. The `streamer` allocates a stream in its HTTP/2 connection
 6. The `streamer` spins up a single-flight `round-tripper` goroutine
 7. The `round-tripper` synchronously POSTs a request to APN service over

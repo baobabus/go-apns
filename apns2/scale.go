@@ -3,7 +3,8 @@
 package apns2
 
 // Scale must be implemented by scale-up and wind-down calculators.
-// Two scale calculators come predefined: Incremental and Exponential.
+// Three scale calculators come predefined: Incremental, Exponential
+// and Constant.
 type Scale interface {
 	IsValid() bool
 	Apply(n uint32) uint32
@@ -28,6 +29,7 @@ func (s constant) ApplyInverse(n uint32) uint32 {
 	return n
 }
 
+// Constant scaler that does not allow scaling.
 var Constant constant
 
 // Incremental scaling mode specifies the number of new instances to be added

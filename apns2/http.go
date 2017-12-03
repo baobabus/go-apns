@@ -132,7 +132,7 @@ func (c *HTTPClient) GetClientConn() (*http2.ClientConn, error) {
 }
 
 // ReservedStream returns a reserved HTTP2Stream in the client's 
-// HTTP/2 connections, or a non-nil error
+// HTTP/2 connection, or a non-nil error.
 func (c *HTTPClient) ReservedStream(cancel func(<-chan struct{}) error) (*HTTP2Stream, error) {
 	c.initOnce.Do(c.init)
 	c.mu.Lock()
@@ -234,7 +234,7 @@ func (c *HTTPClient) refreshCapLocked() {
 }
 
 // HTTP2Stream is a token indicating a stream reservation in one
-// of the HTTPClient's HTTP/2 onnections.
+// of the HTTPClient's HTTP/2 connections.
 type HTTP2Stream struct {
 	client *HTTPClient
 }

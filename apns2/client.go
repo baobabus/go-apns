@@ -22,6 +22,7 @@ var Gateway = struct {
 	Production:  "https://api.push.apple.com",
 }
 
+// APNS default root URL path.
 const RequestRoot = "/3/device/"
 
 var (
@@ -46,7 +47,7 @@ var DefaultSigner RequestSigner
 // context.
 var NoContext context.Context
 
-// NoCallback is be used to indicate that results of push notification requests
+// NoCallback is used to indicate that results of push notification requests
 // should be silently discarded.
 var NoCallback chan *Result
 
@@ -221,12 +222,13 @@ func (c *Client) Kill() error {
 // Push asynchronously sends a Notification to the APN service.
 // Context carries a deadline and a cancellation signal and allows you to close
 // long running requests when the context timeout is exceeded.
-// Context can be nil, for backwards compatibility.
+// Context can be nil or NoContext if no cancellation functionality
+// is desired.
 //
 // If not nil, the supplied signer is asked to sign the request before
 // submitting it to APN service. If the supplied signer is nil, but client's
 // signer was configured at the initialization time, the client's signer will
-// sign the request.
+// sign the request. NoSigner can be specified if the request must not be signed.
 //
 // This method will block if downstream capacity is exceeded. For non-blocking
 // behavior or to allow coordination with activity on other channels consider
@@ -253,6 +255,8 @@ func (c *Client) Push(n *Notification, signer RequestSigner, ctx context.Context
 	return err
 }
 
+// HasSigner returns `true` if there is a non-default signer configured
+// for signing push requests.
 func (c *Client) HasSigner() bool {
 	return c.Signer != DefaultSigner
 }
