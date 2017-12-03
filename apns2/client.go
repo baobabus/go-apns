@@ -53,7 +53,7 @@ var NoCallback chan *Result
 // of a push request.
 var DefaultCallback chan<- *Result
 
-// Client provides the means for synchronous communication with APN service.
+// Client provides the means for asynchronous communication with APN service.
 // It is safe to use one client in concurrent goroutines and issue concurrent
 // push requests.
 //
@@ -81,11 +81,12 @@ type Client struct {
 
 	// Certificate, if not nil, is used in the client side configuration
 	// of the TLS connections to APN servers.
-	// This is one of authentication methods supported by APN service.
+	// This is one of the authentication methods supported by APN service.
 	Certificate *tls.Certificate
 
 	// RootCA, if not nil, can be used to specify an alternative root
-	// certificate authority.
+	// certificate authority. This should only be needed in testing, or
+	// if you system's root certificate authorities are not set up.
 	RootCA *tls.Certificate
 
 	// Signer, if not nil, is used to sign individual requests to APN service.
@@ -195,7 +196,7 @@ func (c *Client) Stop() error {
 	return nil
 }
 
-// Kill performs hard shutdown of the Client without waiting for the preocessing
+// Kill performs hard shutdown of the Client without waiting for the processing
 // pipeline to unwind. Inflight requests are discarded.
 func (c *Client) Kill() error {
 	c.mu.Lock()
