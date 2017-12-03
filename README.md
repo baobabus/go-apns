@@ -24,15 +24,16 @@ management of HTTP/2 connections and controlling concurrent HTTP/2 streams.
 
 <p align="center">(Control channels and service goroutines are not shown)</p>
 
-1. Submitter picks up push requests from the processing queue
-2. Submitter forwards requests to internal dispatch channel
-3. Each streamer maintains a single HTTP/2 connection to APN service
-4. One of the streamers picks up a push request from the dispatch queue
-5. The streamer allocates a stream in its HTTP/2 connection
-6. The streamer spins up a single-flight round-tripper goroutine
-7. The round-tripper synchronously POSTs a request to APN service over its streamer's HTTP/2 connection
-8. APN server's response is witten to the callback channel
-9. Governor collects metrics for dispatch and callback channels blockages,
+1. `Submitter` picks up push requests from the processing queue
+2. `Submitter` forwards requests to internal dispatch channel
+3. Each `streamer` maintains a single HTTP/2 connection to APN service
+4. One of the `streamer`s picks up a push request from the dispatch queue
+5. The `streamer` allocates a stream in its HTTP/2 connection
+6. The `streamer` spins up a single-flight `round-tripper` goroutine
+7. The `round-tripper` synchronously POSTs a request to APN service over
+its streamer's HTTP/2 connection
+8. APN server's response is written to the callback channel
+9. `Governor` collects metrics for dispatch and callback channel blockages,
 evaluates processing throughput and spins up new streamers as needed
 
 ## Configuration Settings and Customization
