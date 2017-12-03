@@ -4,22 +4,13 @@ go:
   - 1.7.x
   - 1.8.x
   - 1.9.x
-  - tip
 
 before_install:
-  - go get gopkg.in/alecthomas/kingpin.v2
-  - go get github.com/axw/gocov/gocov
-  - go get github.com/mattn/goveralls
-  - go get github.com/stretchr/testify/assert
-  - go get github.com/kardianos/govendor
-  - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
-
-install:
-  - $HOME/gopath/bin/govendor sync
+  - go get golang.org/x/crypto/pkcs12
+  - go get golang.org/x/net/http2
+  - go get golang.org/x/net/idna
+  - go get github.com/dgrijalva/jwt-go
+  - go get github.com/baobabus/go-apnsmock/apns2mock
 
 os:
   - linux
-
-script:
-  - $HOME/gopath/bin/govendor test -race -v +local
-  - $HOME/gopath/bin/goveralls -service=travis-ci

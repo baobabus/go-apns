@@ -35,7 +35,7 @@ func TestConnectNoHTTP2Incursion(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer s.Close()
-	c, err := NewHTTPClient(s.URL, &CommsFast, nil, s.RootCertificate)
+	c, err := NewHTTPClient(s.URL, CommsFast, nil, s.RootCertificate)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestConnect(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer s.Close()
-	c, err := NewHTTPClient(s.URL, &CommsFast, nil, s.RootCertificate)
+	c, err := NewHTTPClient(s.URL, CommsFast, nil, s.RootCertificate)
 	if err != nil {
 		t.Fatal(err)
 	}

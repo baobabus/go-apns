@@ -48,7 +48,7 @@ ConnsCfg{
 }
 ```
 
-### Processing Settings
+ProcCfg example:
 
 ```go
 ProcCfg{
