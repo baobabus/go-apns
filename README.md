@@ -32,7 +32,7 @@ management of HTTP/2 connections and controlling concurrent HTTP/2 streams.
 6. The streamer spins up a single-flight round-tripper goroutine
 7. The round-tripper synchronously POSTs a request to APN service over its streamer's HTTP/2 connection
 8. APN server's response is witten to the callback channel
-9. Governor monitors dispatch and callback channels for any blockages,
+9. Governor collects metrics for dispatch and callback channels blockages,
 evaluates processing throughput and spins up new streamers as needed
 
 ## Configuration Settings and Customization
