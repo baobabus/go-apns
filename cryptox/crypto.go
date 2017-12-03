@@ -22,7 +22,7 @@
 //
 // Modifications copyright 2017 Aleksey Blinov. All rights reserved.
 
-package apns2
+package cryptox
 
 import (
 	"crypto"
@@ -37,7 +37,6 @@ import (
 	"golang.org/x/crypto/pkcs12"
 )
 
-// Cryptography-related errors.
 var (
 	ErrPKCS8NotPem           = errors.New("PKCS8PrivateKey: invalid .p8 PEM file")
 	ErrPKCS8NotECDSA         = errors.New("PKCS8PrivateKey: key must be of type ecdsa.PrivateKey")

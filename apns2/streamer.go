@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/baobabus/go-apns/syncx"
 )
 
 // Each streamer "owns" a single HTTPClient on top of an HTTP/2 transport.
@@ -31,7 +33,7 @@ type streamer struct {
 	httpClient *HTTPClient
 
 	// counter for waits on outbound channel
-	waitCtr  TickTockCounter
+	waitCtr  syncx.TickTockCounter
 
 	// wait group for spawned HTTP/2 roundrips
 	wg sync.WaitGroup

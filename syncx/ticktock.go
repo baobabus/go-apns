@@ -1,8 +1,6 @@
 // Copyright 2017 Aleksey Blinov. All rights reserved.
 
-// TODO Consider moving this to its own package.
-
-package apns2
+package syncx
 
 import (
 	"sync/atomic"

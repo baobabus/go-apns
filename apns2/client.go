@@ -7,6 +7,8 @@ import (
 	"crypto/tls"
 	"errors"
 	"sync"
+
+	"github.com/baobabus/go-apns/syncx"
 )
 
 // Gateway holds APN service's Development & Production urls.
@@ -119,7 +121,7 @@ type Client struct {
 	cdone chan struct{} // pipeline done processing signal
 
 	// counter for waits on outbound channel
-	waitCtr  TickTockCounter
+	waitCtr  syncx.TickTockCounter
 }
 
 const (

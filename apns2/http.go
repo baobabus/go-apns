@@ -93,7 +93,7 @@ func NewHTTPClient(gateway string, commsCfg CommsCfg, cCert *tls.Certificate, ro
 			Transport: t,
 			Timeout:   commsCfg.RequestTimeout,
 		},
-		addr:    AuthorityAddr(url.Scheme, url.Host),
+		addr:    authorityAddr(url.Scheme, url.Host),
 		precise: false,
 		pollInt: 0,
 		cfgCap:  1,
@@ -244,9 +244,9 @@ func (s *HTTP2Stream) Close() {
 	s.client.release()
 }
 
-// AuthorityAddr returns a given authority (a host/IP, or host:port / ip:port)
+// authorityAddr returns a given authority (a host/IP, or host:port / ip:port)
 // and returns a host:port. The port 443 is added if needed.
-func AuthorityAddr(scheme string, authority string) string {
+func authorityAddr(scheme string, authority string) string {
 	host, port, err := net.SplitHostPort(authority)
 	if err != nil { // authority didn't have a port
 		port = "443"
