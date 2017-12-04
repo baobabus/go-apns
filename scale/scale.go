@@ -1,6 +1,6 @@
 // Copyright 2017 Aleksey Blinov. All rights reserved.
 
-package apns2
+package scale
 
 // Scale must be implemented by scale-up and wind-down calculators.
 // Three scale calculators come predefined: Incremental, Exponential

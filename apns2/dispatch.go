@@ -5,6 +5,8 @@ package apns2
 import (
 	"fmt"
 	"time"
+
+	"github.com/baobabus/go-apns/scale"
 )
 
 type ProcRate float64
@@ -44,7 +46,7 @@ type ProcCfg struct {
 	// Scale specifies the manner of scaling up and winding down.
 	// Two scaling modes come prefefined: Incremental and Exponential.
 	// See below for more detail.
-	Scale      Scale
+	Scale      scale.Scale
 
 	// MinSustain is the minimum duration of time over which the processing
 	// has to experience blocking before a scale-up attemp is made. It is also
@@ -97,7 +99,7 @@ type ProcCfg struct {
 var MinBlockingProcConfig =  ProcCfg {
 	MinConns:                  1,
 	MaxConns:                  1,
-	Scale:                     Constant,
+	Scale:                     scale.Constant,
 	AllowHTTP2Incursion:       true,
 	HTTP2MetricsRefreshPeriod: 500 * time.Millisecond,
 }
