@@ -101,7 +101,7 @@ func (f *TickTockFolder) Draw() (complete uint32, pending uint32) {
 	pending = uint32(cntr)
 	cntr = cntr >> 32
 	complete = uint32(cntr)
-	// It's possible for the complete count to be have increased by this point,
+	// It's possible for the complete count to have increased by this point,
 	// but we are only subtracting the value previously read.
 	// This is safe as long as we are not calling Draw concurrently from more
 	// than one goroutine.
