@@ -257,37 +257,37 @@
      </g>
      <g class="com.sun.star.drawing.TextShape">
       <g id="id4">
-       <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="1372" y="2194"/><tspan class="TextPosition" x="1372" y="2194"><tspan fill="rgb(128,128,128)" stroke="none">IN :</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="987" y="2584"/><tspan class="TextPosition" x="987" y="2584"><tspan fill="rgb(128,128,128)" stroke="none">OUT :</tspan></tspan></tspan></text>
+       <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="1172" y="2194"/><tspan class="TextPosition" x="1172" y="2194"><tspan fill="rgb(128,128,128)" stroke="none">IN :</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="787" y="2584"/><tspan class="TextPosition" x="787" y="2584"><tspan fill="rgb(128,128,128)" stroke="none">OUT :</tspan></tspan></tspan></text>
       </g>
      </g>
      <g class="com.sun.star.drawing.LineShape">
       <g id="id5">
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3453,1610 L 3504,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3555,1610 L 3606,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3657,1610 L 3708,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3759,1610 L 3810,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3861,1610 L 3912,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 3963,1610 L 4014,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4065,1610 L 4116,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4167,1610 L 4218,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4269,1610 L 4320,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4371,1610 L 4422,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4473,1610 L 4524,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4575,1610 L 4626,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4677,1610 L 4728,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4779,1610 L 4830,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4881,1610 L 4932,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 4983,1610 L 5034,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5085,1610 L 5136,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5187,1610 L 5238,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5289,1610 L 5340,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5391,1610 L 5442,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5493,1610 L 5544,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5595,1610 L 5646,1610"/>
-       <path fill="none" stroke="rgb(128,128,128)" d="M 5697,1610 L 5714,1610"/>
-       <path fill="rgb(128,128,128)" stroke="none" d="M 3440,1710 L 3440,1643 3440,1577 3440,1510 3449,1510 3457,1510 3466,1510 3466,1577 3466,1643 3466,1710 3458,1710 3449,1710 3440,1710 Z"/>
-       <path fill="rgb(128,128,128)" stroke="none" d="M 5727,1510 L 5727,1577 5727,1643 5727,1710 5718,1710 5710,1710 5701,1710 5701,1643 5701,1577 5701,1510 5709,1510 5718,1510 5727,1510 Z"/>
-       <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="3138" y="1371"/><tspan class="TextPosition" x="3138" y="1371"><tspan fill="rgb(128,128,128)" stroke="none">MinSustain = 1sec</tspan></tspan></tspan></text>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3253,1610 L 3304,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3355,1610 L 3406,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3457,1610 L 3508,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3559,1610 L 3610,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3661,1610 L 3712,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3763,1610 L 3814,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3865,1610 L 3916,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 3967,1610 L 4018,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4069,1610 L 4120,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4171,1610 L 4222,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4273,1610 L 4324,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4375,1610 L 4426,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4477,1610 L 4528,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4579,1610 L 4630,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4681,1610 L 4732,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4783,1610 L 4834,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4885,1610 L 4936,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 4987,1610 L 5038,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 5089,1610 L 5140,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 5191,1610 L 5242,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 5293,1610 L 5344,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 5395,1610 L 5446,1610"/>
+       <path fill="none" stroke="rgb(128,128,128)" d="M 5497,1610 L 5514,1610"/>
+       <path fill="rgb(128,128,128)" stroke="none" d="M 3240,1710 L 3240,1643 3240,1577 3240,1510 3249,1510 3257,1510 3266,1510 3266,1577 3266,1643 3266,1710 3258,1710 3249,1710 3240,1710 Z"/>
+       <path fill="rgb(128,128,128)" stroke="none" d="M 5527,1510 L 5527,1577 5527,1643 5527,1710 5518,1710 5510,1710 5501,1710 5501,1643 5501,1577 5501,1510 5509,1510 5518,1510 5527,1510 Z"/>
+       <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="2938" y="1371"/><tspan class="TextPosition" x="2938" y="1371"><tspan fill="rgb(128,128,128)" stroke="none">MinSustain = 1sec</tspan></tspan></tspan></text>
       </g>
      </g>
      <g class="Group">
