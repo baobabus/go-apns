@@ -123,6 +123,8 @@ type Client struct {
 
 	// counter for waits on outbound channel
 	waitCtr  syncx.TickTockCounter
+	// counter of processed requests
+	rateCtr  syncx.Counter
 }
 
 const (
@@ -303,6 +305,7 @@ func (c *Client)submit(req *Request) (rerr error) {
 	if c.state < stateStarting || c.state > stateRunning {
 		return
 	}
+	c.rateCtr.Add(1)
 	// TODO implement ctx timing out and cancellation checks
 	isBlocked := false
 	select {
