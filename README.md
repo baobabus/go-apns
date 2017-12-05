@@ -38,6 +38,36 @@ its streamer's HTTP/2 connection
 9. `Governor` collects metrics for dispatch and callback channel blockages,
 evaluates processing throughput and spins up new streamers as needed
 
+## Scaling up
+
+During each poll interval governor collects stats on inbound and outbound channel blockages, 
+on the number of notifications pushed and the size of data sent out. It then evalutes the stats 
+against its scaling configuration and spins up new streamers if and when is appropriate.
+
+In the following illustrative scenario
+
+- PollInterval = 0.2sec
+- MinSustaing = 1sec
+- SettlePeriod = 2sec
+
+![Scaling sequence](./doc/scale.svg)
+<p align="center" style="color: #888"><i>(Processing rate and bandwidth stats are not shown)</i></p>
+
+1. Blockages on outbound channel prevent blockages on inbound channel to be counted
+2. Minimum time of sustained blockage on inbound channel is encountered
+    - new streamers are spun up asynchronously
+    - sustained blockages on inboud channel have no effect while new streamers are staring
+3. All new streamers have completed their initialization
+    - settle period begins
+    - sustained blockages on inboud channel have no effect during settle period
+4. Settle period ends
+    - since there's been minimum time of sustained blockage on inbound channel, more streamers are spun up
+    - sustained blockages on inboud channel have no effect while new streamers are staring
+ 5. All new streamers have completed their initialization
+    - settle period begins
+    - sustained blockages on inboud channel have no effect during settle period
+ 6. Blockages on inbound channel end - no more scaling up is needed.
+
 ## Configuration Settings and Customization
 
 ConnsCfg example:
