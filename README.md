@@ -44,10 +44,10 @@ During each poll interval governor collects stats on inbound and outbound channe
 on the number of notifications pushed and the size of data sent out. It then evalutes the stats 
 against its scaling configuration and spins up new streamers if and when is appropriate.
 
-In the following illustrative scenario
+In the following illustrative scenario:
 
 - PollInterval = 0.2sec
-- MinSustaing = 1sec
+- MinSustain = 1sec
 - SettlePeriod = 2sec
 
 ![Scaling sequence](./doc/scale.svg)
@@ -56,13 +56,13 @@ In the following illustrative scenario
 1. Blockages on outbound channel prevent blockages on inbound channel to be counted
 2. Minimum time of sustained blockage on inbound channel is encountered
     - new streamers are spun up asynchronously
-    - sustained blockages on inboud channel have no effect while new streamers are staring
+    - sustained blockages on inboud channel have no effect while new streamers are starting
 3. All new streamers have completed their initialization
     - settle period begins
     - sustained blockages on inboud channel have no effect during settle period
 4. Settle period ends
     - since there's been minimum time of sustained blockage on inbound channel, more streamers are spun up
-    - sustained blockages on inboud channel have no effect while new streamers are staring
+    - sustained blockages on inboud channel have no effect while new streamers are starting
  5. All new streamers have completed their initialization
     - settle period begins
     - sustained blockages on inboud channel have no effect during settle period
