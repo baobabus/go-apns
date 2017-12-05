@@ -171,9 +171,6 @@ type governor struct {
 	// evaluation need to have an effect on scaling decision
 	minSust    uint32
 
-	// should following launch attemtps be blocked by pending ones
-	nonBlocking bool
-
 	// counters of continuous periods with waits and no waits
 	// on inbound and oubound channels
 	inCtr  waitCounter
@@ -197,7 +194,7 @@ type governor struct {
 	wExits   chan *streamer
 	lExits   chan *launcher
 
-	// time of last up- or down-scaling
+	// time of last up- or down-scaling completion
 	lastScale time.Time
 
 	isClosing bool
@@ -254,6 +251,9 @@ func (g *governor) run() {
 				if l.err != nil {
 					logWarn(g.id, "Error starting streamer: %v", l.err)
 				}
+			}
+			if len(g.launchers) == 0 {
+				g.lastScale = time.Now()
 			}
 			// TODO Handle failed launches
 		case w := <-g.wExits:
@@ -370,14 +370,11 @@ func (g *governor) launchStreamer() {
 }
 
 func (g *governor) allowedScaleDelta(forScaleUp bool) int {
-	if g.isClosing {
+	if g.isClosing || len(g.launchers) > 0 {
 		return 0
 	}
 	now := time.Now()
 	if g.lastScale.Add(g.cfg.SettlePeriod).After(now) {
-		return 0
-	}
-	if !g.nonBlocking && len(g.launchers) > 0 {
 		return 0
 	}
 	prov := uint32(len(g.streamers) + len(g.launchers))
