@@ -38,10 +38,11 @@ import (
 )
 
 var (
-	ErrPKCS8NotPem           = errors.New("PKCS8PrivateKey: invalid .p8 PEM file")
-	ErrPKCS8NotECDSA         = errors.New("PKCS8PrivateKey: key must be of type ecdsa.PrivateKey")
-	ErrPEMMissingPrivateKey  = errors.New("PEM: private key not found")
-	ErrPEMMissingCertificate = errors.New("PEM: certificate not found")
+	ErrPKCS8NotPem             = errors.New("PKCS8PrivateKey: invalid .p8 PEM file")
+	ErrPKCS8NotECDSA           = errors.New("PKCS8PrivateKey: key must be of type ecdsa.PrivateKey")
+	ErrPEMMissingPrivateKey    = errors.New("PEM: private key not found")
+	ErrPEMMissingCertificate   = errors.New("PEM: certificate not found")
+	ErrPEMBadPrivateKeyFormat  = errors.New("PEM: private key is in neither PKCS#1 or PKCS#8 format")
 )
 
 // PKCS8PrivateKeyFromFile loads a .p8 certificate from a local file and returns a
@@ -204,10 +205,17 @@ func decryptPrivateKey(block *pem.Block, password string) (crypto.PrivateKey, er
 	return parsePrivateKey(bytes)
 }
 
-func parsePrivateKey(bytes []byte) (crypto.PrivateKey, error) {
-	key, err := x509.ParsePKCS1PrivateKey(bytes)
-	if err != nil {
-		return nil, err
+func parsePrivateKey(bytes []byte) (res crypto.PrivateKey, err error) {
+	res, err = x509.ParsePKCS1PrivateKey(bytes)
+	if err == nil {
+		return res, nil
 	}
-	return key, nil
+	// ParsePKCS8PrivateKey actually calls ParsePKCS1PrivateKey internally
+	// before attempting parsing in EC format. This makes above call to
+	// ParsePKCS1PrivateKey unnecessary.
+	res, err = x509.ParsePKCS8PrivateKey(bytes)
+	if err == nil {
+		return res, nil
+	}
+	return nil, ErrPEMBadPrivateKeyFormat
 }

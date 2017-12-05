@@ -17,7 +17,7 @@ var (
 )
 
 func TestJWTSignerDefaults(t *testing.T) {
-	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/token_pk.p8")
+	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/pk_valid.p8")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestJWTSignerDefaults(t *testing.T) {
 }
 
 func TestJWTSignerCustom(t *testing.T) {
-	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/token_pk.p8")
+	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/pk_valid.p8")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func TestJWTSignerCustom(t *testing.T) {
 }
 
 func TestJWTSignerRefresh(t *testing.T) {
-	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/token_pk.p8")
+	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/pk_valid.p8")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +94,7 @@ func TestJWTSignerRefresh(t *testing.T) {
 }
 
 func TestJWTSignerSignRequest(t *testing.T) {
-	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/token_pk.p8")
+	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("../cryptox/test_data/pk_valid.p8")
 	if err != nil {
 		t.Fatal(err)
 	}
