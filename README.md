@@ -1,6 +1,8 @@
 # Go APNS
 
-*(WIP)* Go APNS is a client for Apple Push Notification service over HTTP/2 protocol done "the Go way".
+:warning: **WORK IN PROGRESS** :warning:
+
+Go APNS is a client for Apple Push Notification service over HTTP/2 protocol done "the Go way".
 
 [![Build Status](https://travis-ci.org/baobabus/go-apns.svg?branch=master)](https://travis-ci.org/baobabus/go-apns)
 [![GoDoc](https://godoc.org/github.com/baobabus/go-apns/apns2?status.svg)](https://godoc.org/github.com/baobabus/go-apns/apns2)
@@ -22,7 +24,7 @@ management of HTTP/2 connections and controlling concurrent HTTP/2 streams.
 
 ![Processing Flow Diagram](./doc/flow-phase1.svg)
 
-<p align="center">(Control channels and service goroutines are not shown)</p>
+<p align="center" style="color: #888"><i>(Control channels and service goroutines are not shown)</i></p>
 
 1. `Submitter` picks up push requests from the processing queue
 2. `Submitter` forwards requests to internal dispatch channel
