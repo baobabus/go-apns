@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/baobabus/go-apns/funit"
 	"github.com/baobabus/go-apns/scale"
 )
-
-type ProcRate float64
 
 // ProcCfg is a set of parameters that govern request processing flow
 // including automatic scaling of the processing pipeline.
@@ -35,13 +34,13 @@ type ProcCfg struct {
 	// It is not strictly enforced as would be the case with a true rate
 	// limiter. Instead it only prevents additional scaling from taking place
 	// once the specified rate is reached.
-	MaxRate    ProcRate
+	MaxRate    funit.Measure
 
 	// MaxBandwidth is the throughput cap specified in bits per second.
 	// It is not strictly enforced as would be the case with a true rate
 	// limiter. Instead it only prevents additional scaling from taking place
 	// once the specified rate is reached.
-	MaxBandwidth ProcRate
+	MaxBandwidth funit.Measure
 
 	// Scale specifies the manner of scaling up and winding down.
 	// Two scaling modes come prefefined: Incremental and Exponential.
@@ -99,7 +98,21 @@ type ProcCfg struct {
 var MinBlockingProcConfig =  ProcCfg {
 	MinConns:                  1,
 	MaxConns:                  1,
+	MaxRate:                   1000/funit.Second,
+	MaxBandwidth:              10*funit.Gigabit/funit.Second,
 	Scale:                     scale.Constant,
+	AllowHTTP2Incursion:       true,
+	HTTP2MetricsRefreshPeriod: 500 * time.Millisecond,
+}
+
+// UnlimitedProcConfig is a configuration with virtually no limit on processing
+// speed and unlimited base 2 exponential scaling.
+var UnlimitedProcConfig = ProcCfg {
+	MinConns:                  1,
+	MaxConns:                  ^uint32(0),
+	MaxRate:                   10000000/funit.Second,
+	MaxBandwidth:              1*funit.Terabit/funit.Second,
+	Scale:                     scale.Exponential(2),
 	AllowHTTP2Incursion:       true,
 	HTTP2MetricsRefreshPeriod: 500 * time.Millisecond,
 }
@@ -118,6 +131,32 @@ func (c *ProcCfg) minSustainPollPeriods() uint32 {
 		res++
 	}
 	return uint32(res)
+}
+
+// rateAsCount returns MaxRate expressed as number of counts per adjusted
+// MinSustain period. A rate of 1000/sec with MinSustain interval of 11 seconds
+// and PollInterval of 2 seconds is 12000 counts (6 poll intervals are needed
+// to make up at least 11 seconds, resulting in 12 seconds in adjusted
+// sustain period).
+func (c *ProcCfg) rateAsCount() uint64 {
+	if c.MinSustain <= 0 || c.PollInterval <= 0 || c.MaxRate <= 0 {
+		return 0
+	}
+	n := float64(c.minSustainPollPeriods())
+	return uint64(float64(c.MaxRate) * n * float64(c.PollInterval))/uint64(funit.Second.AsDuration())
+}
+
+// bandwidthAsSize returns MaxBandwidth expressed in bytes per adjusted
+// MinSustain period. A bandwidth of 1000/sec with MinSustain interval of 11 seconds
+// and PollInterval of 2 seconds is 12000 counts (6 poll intervals are needed
+// to make up at least 11 seconds, resulting in 12 seconds in adjusted
+// sustain period).
+func (c *ProcCfg) bandwidthAsSize() uint64 {
+	if c.MinSustain <= 0 || c.PollInterval <= 0 || c.MaxBandwidth <= 0 {
+		return 0
+	}
+	n := float64(c.minSustainPollPeriods())
+	return uint64(float64(c.MaxBandwidth/funit.Byte) * n * float64(c.PollInterval))/uint64(funit.Second.AsDuration())
 }
 
 type governor struct {
@@ -139,6 +178,12 @@ type governor struct {
 	// on inbound and oubound channels
 	inCtr  waitCounter
 	outCtr waitCounter
+
+	// processing rate and bandwidth accumulators
+	countAcc *movingAcc
+	sizeAcc  *movingAcc
+	maxCount uint64 // derived from cfg.MaxRate and minSust
+	maxSize  uint64 // derived from cfg.MaxBandwidth and minSust
 
 	retry chan *Request
 
@@ -176,6 +221,14 @@ func (c *waitCounter) acc(val uint32) {
 // Must be called exactly once
 func (g *governor) run() {
 	logInfo(g.id, "Starting.")
+	if g.cfg.MaxRate > 0 && g.minSust > 0 {
+		g.countAcc = newMovingAcc(int(g.minSust))
+		g.maxCount = g.cfg.rateAsCount()
+	}
+	if g.cfg.MaxBandwidth > 0 && g.minSust > 0 {
+		g.sizeAcc = newMovingAcc(int(g.minSust))
+		g.maxSize = g.cfg.bandwidthAsSize()
+	}
 	g.wExits = make(chan *streamer)
 	g.lExits = make(chan *launcher)
 	g.streamers = make(map[*streamer]chan struct{})
@@ -249,17 +302,38 @@ func (g *governor) run() {
 }
 
 func (g *governor) updateCountersAndEvalScaling() int {
-	// It is ok for the calls to Fold to not be fully synchronized.
-	// We are only roughly estimating the disparity.
+	shouldCount := g.cfg.MaxRate > 0 && g.minSust > 0
+	shouldSize := g.cfg.MaxBandwidth > 0 && g.minSust > 0
 	ics, _ := g.c.waitCtr.Fold()
+	cnt := g.c.rateCtr.Draw()
 	var ocs uint32
-	for w, _ := range g.streamers {
-		oc, _ := w.waitCtr.Fold()
+	var osz uint64
+	// It is ok for the calls to Fold and Draw to not be fully synchronized.
+	// We are only roughly estimating the disparity.
+	for s, _ := range g.streamers {
+		oc, _ := s.waitCtr.Fold()
 		ocs += oc
+		if shouldSize {
+			osz += s.sizeCtr.Draw()
+		}
 	}
 	g.inCtr.acc(ics)
 	g.outCtr.acc(ocs)
+	if shouldCount {
+		cnt = g.countAcc.accumulate(cnt)
+	}
+	if shouldSize {
+		osz = g.sizeAcc.accumulate(osz)
+	}
 	if g.inCtr.waits >= g.minSust && g.outCtr.noWaits >= g.minSust {
+		// We've been experiencing blocking long enough,
+		// but we must also not exceed allowed performance limits.
+		if shouldCount && cnt > g.maxCount {
+			return 0
+		}
+		if shouldSize && osz > g.maxSize {
+			return 0
+		}
 		return 1
 	} else if g.inCtr.noWaits >= g.minSust {
 		return -1
@@ -415,4 +489,20 @@ func bufferedForwarder(in <-chan *Request, client *Client, ctl <-chan struct{}) 
 			done = true
 		}
 	}
+}
+
+type movingAcc struct {
+	samples []uint64
+	sum     uint64
+	pos     int
+}
+
+func newMovingAcc(windowSize int) *movingAcc {
+	return &movingAcc{samples: make([]uint64, windowSize)}
+}
+
+func (a *movingAcc) accumulate(v uint64) uint64 {
+	a.sum += v - a.samples[a.pos]
+	a.pos++
+	return a.sum
 }

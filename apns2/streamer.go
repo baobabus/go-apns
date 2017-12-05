@@ -34,6 +34,8 @@ type streamer struct {
 
 	// counter for waits on outbound channel
 	waitCtr  syncx.TickTockCounter
+	// cumulative request sizes in bytes
+	sizeCtr  syncx.Counter
 
 	// wait group for spawned HTTP/2 roundrips
 	wg sync.WaitGroup
@@ -214,6 +216,7 @@ func (s *streamer) submit(req *Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	s.sizeCtr.Add(uint64(estimatedRequestWireSize(httpReq)))
 	logTrace(2, s.id, "http.Response: %v\n", httpResp)
 	defer httpResp.Body.Close()
 	res := &Response{
@@ -299,4 +302,29 @@ func (s *streamer) isConnUsable(resp *Response, err error) bool {
 		}
 	}
 	return true
+}
+
+var baseReqWireSizeSize  = uint64(5 + len(RequestRoot))
+
+// Only an estimate and only based on the fields we use. I.e. cookie sizes
+// are not included.
+func estimatedRequestWireSize(req *http.Request) (res int) {
+	res = len(req.Host) + // this needs to be counted in addition
+	      len(req.URL.RawPath) + // not .EscapedPath() as no escaping is needed in our case
+	      int(req.ContentLength) + // We know we set it
+	      14 + // for "POST " and " HTTP/2.0"
+	      estimatedHeaderWireSize(req.Header)
+	return res
+}
+
+// Only an estimate and under the assupmtion that no duplicates are present
+func estimatedHeaderWireSize(hs http.Header) (res int) {
+	for h, vs := range hs {
+		res += len(h) + 4 // account for ": " and "\r\n"
+		for _, v := range vs {
+			res += len(v)
+			break // no duplicates allowed
+		}
+	}
+	return res
 }
