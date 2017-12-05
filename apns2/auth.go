@@ -76,7 +76,7 @@ type JWT struct {
 	AsHeader  string
 }
 
-// SignRequest adds authorization header to the supplied request.
+// SignRequest adds Authorization header to the supplied request.
 // The header is an encrypted JSON Web Token containing signer's credentials.
 // The token is guaranteed to be valid at the time of the call.
 func (s *JWTSigner) SignRequest(r *http.Request) error {
@@ -84,7 +84,7 @@ func (s *JWTSigner) SignRequest(r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	r.Header.Set("authorization", t.AsHeader)
+	r.Header.Set("Authorization", t.AsHeader)
 	return nil
 }
 
