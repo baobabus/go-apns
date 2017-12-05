@@ -10,6 +10,7 @@ before_install:
   - go get golang.org/x/net/http2
   - go get golang.org/x/net/idna
   - go get github.com/dgrijalva/jwt-go
+  - go get github.com/stretchr/testify/assert
   - go get github.com/baobabus/go-apnsmock/apns2mock
 
 os:

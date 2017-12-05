@@ -3,11 +3,11 @@
 package funit
 
 const (
-	Bit   Measure = 1
-	Byte          = 8
-	Word          = 16
-	DWord         = 32
-	QWord         = 64
+	Bit   Measure = 1.0
+	Byte          = 8.0
+	Word          = 16.0
+	DWord         = 32.0
+	QWord         = 64.0
 )
 
 const (
