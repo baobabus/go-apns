@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	// Load and parse out token signing key
+	// Load and parse our token signing key
 	signingKey, err := cryptox.PKCS8PrivateKeyFromFile("token_signing_pk.p8")
 	if err != nil {
 		log.Fatal("Token signing key error: ", err)
