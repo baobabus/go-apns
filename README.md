@@ -139,16 +139,141 @@ func main() {
 
 ## Configuration Settings and Customization
 
-ConnsCfg example:
+### Communication Settings
+
+Following communication settings are supported:
+
+##### DialTimeout
+
+DialTimeout is the maximum amount of time a dial will wait for a connect
+to complete.
+
+##### RequestTimeout
+
+RequestTimeout specifies a time limit for requests made by the
+HTTPClient. The timeout includes connection time, any redirects,
+and reading the response body.
+
+##### KeepAlive
+
+KeepAlive specifies the keep-alive period for an active network
+connection. If zero, keep-alives are not enabled.
+Apple recommends not closing connections to APN service at all,
+but a sinsibly long duration is acceptable.
+
+##### MaxConcurrentStreams
+
+MaxConcurrentStreams is the maximum allowed number of concurrent streams
+per HTTP/2 connection. If connection's MAX_CONCURRENT_STREAMS option
+is invoked by the remote side with a lower value, the remote request
+will be honored if possible. (See AllowHTTP2Incursion processing option.)
+
+
+CommsCfg example:
 
 ```go
-ConnsCfg{
+CommsCfg{
 	DialTimeout:          1 * time.Second,
 	RequestTimeout:       2 * time.Second,
 	KeepAlive:            10 * time.Hour,
 	MaxConcurrentStreams: 500,
 }
 ```
+
+### Processing Settings
+
+Following processing settings are supported:
+
+##### MaxRetries
+MaxRetries is the maximum number of times a failed notification push
+should be reattempted. This only applies to "retriable" failures.
+
+##### RetryEval
+RetryEval is the function that is called when a push attempt fails
+and retry eligibility needs to be determined.
+
+##### MinConns
+MinConns is minimum number of concurrent connections to APN servers
+that should be kept open. When a client is started it immeditely attempts
+to open the specified number of connections.
+
+##### MaxConns
+MaxConns is maximum allowed number of concurrent connections
+to APN service.
+
+##### MaxRate
+MaxRate is the throughput cap specified in notifications per second.
+It is not strictly enforced as would be the case with a true rate
+limiter. Instead it only prevents additional scaling from taking place
+once the specified rate is reached.
+
+For clarity it is best expressed in idiomatic way:
+
+```go
+MaxRate = 10000 / funit.Second
+```
+
+##### MaxBandwidth
+MaxBandwidth is the throughput cap specified in bits per second.
+It is not strictly enforced as would be the case with a true rate
+limiter. Instead it only prevents additional scaling from taking place
+once the specified rate is reached.
+
+For clarity it is best expressed in idiomatic way:
+
+```go
+MaxBandwidth = 10 * funit.Kilobit / funit.Second
+```
+
+##### Scale
+Scale specifies the manner of scaling up and winding down.
+Three scaling modes come prefefined: Incremental, Exponential and Constant.
+
+```go
+Scale = scale.Incremental(2) // Add two new connections each time
+```
+
+##### MinSustain
+MinSustain is the minimum duration of time over which the processing
+has to experience blocking before a scale-up attemp is made. It is also
+the minimum amount of time over which non-blocking processing has to
+take place before a wind-down attemp is made.
+
+##### PollInterval
+PollInterval is the time between performance metrics sampling attempts.
+
+##### SettlePeriod
+SettlePeriod is the amount of time given to the processing for it to
+settle down at the new rate after successful scaling up or
+winding down attempt. Sustained performance analysis is ignored during
+this time and no new scaling attempt is made.
+
+##### AllowHTTP2Incursion
+AllowHTTP2Incursion controls whether it is OK to perform reflection-based
+probing of HTTP/2 layer. When enabled, scaler may access certain private
+properties in x/net/http2 package if needed for more precise performance
+analysis.
+
+##### UsePreciseHTTP2Metrics
+UsePreciseHTTP2Metrics, if set to true, instructs the scaler to query
+HTTP/2 layer parameters on every call that requires the data.
+Set this to false if you wish to eliminate any additional overhead that
+this may introduce.
+
+##### HTTP2MetricsRefreshPeriod
+HTTP2MetricsRefreshPeriod, if set to a positive value, controls
+the frequency of "imprecise" metrics updates. Under this approach any
+relevant fields that are private to x/net/http2 packaged are only
+queried periodically.
+This reduces the overhead of any required reflection calls, but it also
+introduces the risk of potentially relying on some stale metrics.
+In most realistic situations, however, this can be easily tolerated
+given frequent enough refresh period.
+
+HTTP2MetricsRefreshPeriod value is ignored and periodic updates
+are turned off if UsePreciseHTTP2Metrics is set to true.
+Setting HTTP2MetricsRefreshPeriod to 0 or negative value disables
+metrics refresh even if UsePreciseMetrics is false.
 
 ProcCfg example:
 
@@ -160,7 +285,7 @@ ProcCfg{
 	MaxConns:                  100,
 	MaxRate:                   100000 / funit.Second,
 	MaxBandwidth:              10 * funit.Kilobit / funit.Second,
-	Scale:                     apns2.Incremental(2),
+	Scale:                     scale.Incremental(2),
 	MinSustain:                2 * time.Second,
 	PollInterval:              200 * time.Millisecond,
 	SettlePeriod:              5 * time.Second,
