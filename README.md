@@ -53,7 +53,7 @@ In the following illustrative scenario:
 ![Scaling sequence](./doc/scale.svg)
 <p align="center" style="color: #888"><i>(Processing rate and bandwidth stats are not shown)</i></p>
 
-1. Blockages on outbound channel prevent blockages on inbound channel to be counted
+1. Blockages on outbound channel prevent blockages on inbound channel from being counted
 2. Minimum time of sustained blockage on inbound channel is encountered
     - new streamers are spun up asynchronously
     - sustained blockages on inboud channel have no effect while new streamers are starting
