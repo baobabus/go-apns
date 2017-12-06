@@ -43,7 +43,7 @@ type ProcCfg struct {
 	MaxBandwidth funit.Measure
 
 	// Scale specifies the manner of scaling up and winding down.
-	// Two scaling modes come prefefined: Incremental and Exponential.
+	// Three scaling modes come prefefined: Incremental, Exponential and Constant.
 	// See below for more detail.
 	Scale      scale.Scale
 
