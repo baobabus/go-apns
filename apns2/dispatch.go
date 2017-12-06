@@ -495,11 +495,15 @@ type movingAcc struct {
 }
 
 func newMovingAcc(windowSize int) *movingAcc {
+	if windowSize <= 0 {
+		return nil
+	}
 	return &movingAcc{samples: make([]uint64, windowSize)}
 }
 
 func (a *movingAcc) accumulate(v uint64) uint64 {
 	a.sum += v - a.samples[a.pos]
-	a.pos++
+	a.samples[a.pos] = v
+	a.pos = (a.pos + 1) % len(a.samples)
 	return a.sum
 }
