@@ -122,7 +122,8 @@ func (c *HTTPClient) init() {
 	}
 }
 
-func (c *HTTPClient) GetClientConn() (*http2.ClientConn, error) {
+// getClientConn returns http2.ClientConn from HTTPClient's connection pool.
+func (c *HTTPClient) getClientConn() (*http2.ClientConn, error) {
 	c.initOnce.Do(c.init)
 	if c.connPool == nil {
 		// http2 incursion is disabled, so this it not an error

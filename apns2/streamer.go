@@ -62,7 +62,7 @@ func (s *streamer) start(wg *sync.WaitGroup) error {
 			// This can also be accomplished by sending a malformed http.Request.
 			// No reflection is required, but it's still a kludge and results
 			// in error being logged.
-			_, s.startErr = s.httpClient.GetClientConn()
+			_, s.startErr = s.httpClient.getClientConn()
 			// TODO Should we wait for OPTIONS frame to arrive and set MAXCONCURRENTSTREAMS?
 		}
 		if s.startErr != nil {
