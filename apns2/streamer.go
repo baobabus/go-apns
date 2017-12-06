@@ -245,7 +245,7 @@ func (s *streamer) callBack(req *Request, resp *Response, err error) {
 	if req.Callback != nil {
 		tgt = req.Callback
 	}
-	if tgt != nil {
+	if tgt != nil && tgt != NoCallback {
 		isBlocked := false
 		select {
 		case tgt<- res:
