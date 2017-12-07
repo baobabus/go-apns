@@ -197,6 +197,9 @@ type governor struct {
 	// time of last up- or down-scaling completion
 	lastScale time.Time
 
+	// tracker of blackout time due to back-off after failed connects
+	backOffTracker backOffTracker
+
 	isClosing bool
 }
 
@@ -230,6 +233,8 @@ func (g *governor) run() {
 	g.lExits = make(chan *launcher)
 	g.streamers = make(map[*streamer]chan struct{})
 	g.launchers = make(map[*launcher]chan struct{})
+	g.backOffTracker.initial = 4 * time.Second
+	g.backOffTracker.jitter = 5 * funit.Percent
 	go g.runRetryForwarder()
 	// Launch first MinConns streamers
 	g.tryScaleUp()
@@ -245,12 +250,11 @@ func (g *governor) run() {
 		case l := <-g.lExits:
 			// launcher finished
 			delete(g.launchers, l)
+			g.backOffTracker.update(l.err)
 			if w := l.worker; w != nil {
 				g.streamers[w] = w.ctl
-			} else {
-				if l.err != nil {
-					logWarn(g.id, "Error starting streamer: %v", l.err)
-				}
+			} else if l.err != nil {
+				logWarn(g.id, "Error starting streamer: %v", l.err)
 			}
 			if len(g.launchers) == 0 {
 				g.lastScale = time.Now()
@@ -348,7 +352,7 @@ const (
 
 func (g *governor) tryScaleUp() {
 	delta := g.allowedScaleDelta(forScaleUp)
-	logTrace(0, g.id, "tryScaleUp delta = %d", delta)
+	logTrace(2, g.id, "tryScaleUp delta = %d", delta)
 	if delta <= 0 {
 		return
 	}
@@ -374,7 +378,10 @@ func (g *governor) allowedScaleDelta(forScaleUp bool) int {
 		return 0
 	}
 	now := time.Now()
-	if g.lastScale.Add(g.cfg.SettlePeriod).After(now) {
+	switch {
+	case g.lastScale.Add(g.cfg.SettlePeriod).After(now):
+		return 0
+	case g.backOffTracker.blackoutEnd().After(now):
 		return 0
 	}
 	prov := uint32(len(g.streamers) + len(g.launchers))
