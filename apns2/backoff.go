@@ -11,6 +11,7 @@ import (
 
 type backOffTracker struct {
 	initial time.Duration
+	max     time.Duration
 	jitter  funit.Measure
 	current time.Duration
 	end     time.Time
@@ -29,8 +30,14 @@ func (t *backOffTracker) update(status error) {
 				jtr := rand.Int63n(int64(funit.Measure(d) * t.jitter))
 				d += time.Duration(jtr)
 			}
+			if t.max > 0 && d > t.max {
+				d = t.max
+			}
 			t.end = now.Add(d)
 			t.current = t.current << 1
+			if t.max > 0 && t.current > t.max {
+				t.current = t.max
+			}
 			logTrace(1, "backoff", "backing off for %v until %v", d, t.end)
 		}
 	} else {
