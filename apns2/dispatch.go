@@ -234,7 +234,11 @@ func (g *governor) run() {
 	g.streamers = make(map[*streamer]chan struct{})
 	g.launchers = make(map[*launcher]chan struct{})
 	g.backOffTracker.initial = 4 * time.Second
-	g.backOffTracker.jitter = 5 * funit.Percent
+	if g.c.CommsCfg.MinDialBackOff > 0 {
+		g.backOffTracker.initial = g.c.CommsCfg.MinDialBackOff
+	}
+	g.backOffTracker.max = g.c.CommsCfg.MaxDialBackOff
+	g.backOffTracker.jitter = g.c.CommsCfg.DialBackOffJitter
 	go g.runRetryForwarder()
 	// Launch first MinConns streamers
 	g.tryScaleUp()

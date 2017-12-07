@@ -148,6 +148,23 @@ Following communication settings are supported:
 DialTimeout is the maximum amount of time a dial will wait for a connect
 to complete.
 
+##### MinDialBackOff
+
+MinDialBackOff is the minimum amount of time by which dial attempts
+should be delayed after encountering a refused connection.
+Actual back-off time will grow exponentially until a connection attempt
+is successful.
+
+##### MaxDialBackOff
+
+MaxDialBackOff is the maximum amount of time by which dial attempts
+should be delayed after encountering a refused connection.
+
+##### DialBackOffJitter
+
+DialBackOffJitter is used to calculate the ramdom amount to appy to each
+back-off time calculation.
+
 ##### RequestTimeout
 
 RequestTimeout specifies a time limit for requests made by the
@@ -174,6 +191,9 @@ CommsCfg example:
 ```go
 CommsCfg{
 	DialTimeout:          1 * time.Second,
+	MinDialBackOff:       4 * time.Second,
+	MaxDialBackOff:       10 * time.Minute,
+	DialBackOffJitter:    10 * funit.Percent,
 	RequestTimeout:       2 * time.Second,
 	KeepAlive:            10 * time.Hour,
 	MaxConcurrentStreams: 500,

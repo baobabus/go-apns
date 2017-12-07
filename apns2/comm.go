@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"net"
 	"time"
+
+	"github.com/baobabus/go-apns/funit"
 )
 
 // CommsCfg is a set of parameters that govern communications with APN servers.
@@ -17,6 +19,20 @@ type CommsCfg struct {
 	// DialTimeout is the maximum amount of time a dial will wait for a connect
 	// to complete.
 	DialTimeout time.Duration
+
+	// MinDialBackOff is the minimum amount of time by which dial attempts
+	// should be delayed after encountering a refused connection.
+	// Actual back-off time will grow exponentially until a connection attempt
+	// is successful.
+	MinDialBackOff time.Duration
+
+	// MaxDialBackOff is the maximum amount of time by which dial attempts
+	// should be delayed after encountering a refused connection.
+	MaxDialBackOff time.Duration
+
+	// DialBackOffJitter is used to calculate the ramdom amount to appy to each
+	// back-off time calculation.
+	DialBackOffJitter funit.Measure
 
 	// RequestTimeout specifies a time limit for requests made by the
 	// HTTPClient. The timeout includes connection time, any redirects,
@@ -41,6 +57,9 @@ type CommsCfg struct {
 // long delays cannot be tolerated.
 var CommsFast = CommsCfg{
 	DialTimeout:          20 * time.Second,
+	MinDialBackOff:       4 * time.Second,
+	MaxDialBackOff:       10 * time.Minute,
+	DialBackOffJitter:    10 * funit.Percent,
 	RequestTimeout:       30 * time.Second,
 	KeepAlive:            10 * time.Hour,
 	MaxConcurrentStreams: 500,
@@ -50,6 +69,9 @@ var CommsFast = CommsCfg{
 // wider range of network performance and APN service responsiveness scenarios.
 var CommsSlow = CommsCfg{
 	DialTimeout:          40 * time.Second,
+	MinDialBackOff:       10 * time.Second,
+	MaxDialBackOff:       10 * time.Minute,
+	DialBackOffJitter:    10 * funit.Percent,
 	RequestTimeout:       60 * time.Second,
 	KeepAlive:            10 * time.Hour,
 	MaxConcurrentStreams: 500,
