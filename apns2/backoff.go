@@ -20,7 +20,7 @@ type backOffTracker struct {
 func (t *backOffTracker) update(status error) {
 	if status != nil {
 		if now := time.Now(); now.After(t.end) {
-			// Ignore any failures before end time as it may be coming
+			// Ignore any failures before end time as they may be coming
 			// from a concurrent attempt.
 			if t.current == 0 {
 				t.current = t.initial
