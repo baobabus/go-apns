@@ -123,7 +123,10 @@ var UnlimitedProcConfig = ProcCfg {
 // If either PollInterval or MinSustain is not a valid time interval,
 // max uint32 is returned.
 func (c *ProcCfg) minSustainPollPeriods() uint32 {
-	if c.MinSustain <= 0 || c.PollInterval <= 0 {
+	if c.MinSustain == 0 {
+		return 0
+	}
+	if c.MinSustain < 0 || c.PollInterval <= 0 {
 		return ^uint32(0)
 	}
 	res := c.MinSustain / c.PollInterval
