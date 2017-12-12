@@ -194,7 +194,7 @@ func (c *Client) Stop() error {
 	case <-c.cdone:
 	case <-c.ctl:
 	}
-	if c.Callback != nil {
+	if c.Callback != nil && c.Callback != NoCallback {
 		close(c.Callback)
 	}
 	logInfo(c.Id, "Stopped.")
