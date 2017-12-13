@@ -32,9 +32,15 @@ import (
 	"encoding/pem"
 	"errors"
 	"io/ioutil"
-	"strings"
 
 	"golang.org/x/crypto/pkcs12"
+)
+
+const (
+	PEM_X509 string = "CERTIFICATE"
+	PEM_RSA         = "RSA PRIVATE KEY"
+	PEM_PKCS8       = "ENCRYPTED PRIVATE KEY"
+	PEM_PKCS8INF    = "PRIVATE KEY"
 )
 
 var (
@@ -135,11 +141,15 @@ func ClientCertFromPemBytes(bytes []byte, password string) (tls.Certificate, err
 		if block == nil {
 			break
 		}
-		if block.Type == "CERTIFICATE" {
+		var isRSA bool
+		switch block.Type {
+		case PEM_X509:
 			cert.Certificate = append(cert.Certificate, block.Bytes)
-		}
-		if block.Type == "PRIVATE KEY" || strings.HasSuffix(block.Type, "PRIVATE KEY") {
-			key, err := decryptPrivateKey(block, password)
+		case PEM_RSA:
+			isRSA = true
+			fallthrough
+		case PEM_PKCS8, PEM_PKCS8INF:
+			key, err := decryptPrivateKey(block, password, isRSA)
 			if err != nil {
 				return tls.Certificate{}, err
 			}
@@ -178,7 +188,7 @@ func RootCAFromPemBytes(bytes []byte) (tls.Certificate, error) {
 		if block == nil {
 			break
 		}
-		if block.Type == "CERTIFICATE" {
+		if block.Type == PEM_X509 {
 			cert.Certificate = append(cert.Certificate, block.Bytes)
 		}
 	}
@@ -192,7 +202,7 @@ func RootCAFromPemBytes(bytes []byte) (tls.Certificate, error) {
 	return cert, nil
 }
 
-func decryptPrivateKey(block *pem.Block, password string) (crypto.PrivateKey, error) {
+func decryptPrivateKey(block *pem.Block, password string, isRSA bool) (crypto.PrivateKey, error) {
 	bytes := block.Bytes
 	if x509.IsEncryptedPEMBlock(block) {
 		var err error
@@ -201,13 +211,15 @@ func decryptPrivateKey(block *pem.Block, password string) (crypto.PrivateKey, er
 			return nil, err
 		}
 	}
-	return parsePrivateKey(bytes)
+	return parsePrivateKey(bytes, isRSA)
 }
 
-func parsePrivateKey(bytes []byte) (crypto.PrivateKey, error) {
-	res, err := x509.ParsePKCS8PrivateKey(bytes)
-	if err != nil {
-		return nil, err
+func parsePrivateKey(bytes []byte, isRSA bool) (res crypto.PrivateKey, err error) {
+	// Thanks to @jameshfisher for brining up PKCS8 case
+	if isRSA {
+		res, err = x509.ParsePKCS1PrivateKey(bytes)
+	} else {
+		res, err = x509.ParsePKCS8PrivateKey(bytes)
 	}
-	return res, nil
+	return res, err
 }
