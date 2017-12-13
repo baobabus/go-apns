@@ -5,42 +5,8 @@ package apns2
 import (
 	"testing"
 
-	"time"
-
-	"github.com/baobabus/go-apnsmock/apns2mock"
 	"github.com/stretchr/testify/assert"
 )
-
-var (
-	apnsMockComms_Typical = apns2mock.CommsCfg{
-		MaxConcurrentStreams: 500,
-		MaxConns:             1000,
-		ConnectionDelay:      1*time.Second,
-		ResponseTime:         20*time.Millisecond,
-	}
-	apnsMockComms_NoDelay = apns2mock.CommsCfg{
-		MaxConcurrentStreams: 500,
-		MaxConns:             1000,
-		ConnectionDelay:      0,
-		ResponseTime:         0,
-	}
-)
-
-func mustNewMockServer(t *testing.T) *apns2mock.Server {
-	res, err := apns2mock.NewServer(apnsMockComms_NoDelay, apns2mock.AllOkayHandler, apns2mock.AutoCert, apns2mock.AutoKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return res
-}
-
-func mustNewHTTPClient(t *testing.T, s *apns2mock.Server) *HTTPClient {
-	res, err := NewHTTPClient(s.URL, CommsFast, nil, s.RootCertificate)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return res
-}
 
 func TestGetClientConnNoHTTP2Incursion(t *testing.T) {
 	s := mustNewMockServer(t)
