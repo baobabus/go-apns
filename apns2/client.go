@@ -243,7 +243,7 @@ func (c *Client) Push(n *Notification, signer RequestSigner, ctx context.Context
 		return ErrClientNotRunning
 	}
 	// Ensure that authentication is possible
-	if c.Certificate == nil && c.Signer == nil && signer == nil {
+	if c.Certificate == nil && (signer == NoSigner || !c.HasSigner() && signer == DefaultSigner) {
 		return ErrMissingAuth
 	}
 	// Everything else is done asynchronously
