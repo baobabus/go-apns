@@ -29,11 +29,11 @@ var (
 		ResponseTime:         0,
 	}
 	commsTest_Fast = CommsCfg{
-		DialTimeout:          10 * time.Millisecond,
-		MinDialBackOff:       4 * time.Second,
-		MaxDialBackOff:       10 * time.Minute,
+		DialTimeout:          20 * time.Millisecond,
+		MinDialBackOff:       100 * time.Millisecond,
+		MaxDialBackOff:       500 * time.Millisecond,
 		DialBackOffJitter:    10 * funit.Percent,
-		RequestTimeout:       20 * time.Millisecond,
+		RequestTimeout:       30 * time.Millisecond,
 		KeepAlive:            100 * time.Millisecond,
 		MaxConcurrentStreams: 500,
 	}

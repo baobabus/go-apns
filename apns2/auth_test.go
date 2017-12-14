@@ -67,7 +67,7 @@ func TestJWTSignerRefresh(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lifespan := 250 * time.Microsecond
+	lifespan := 750 * time.Microsecond
 	s := &JWTSigner{
 		KeyID:         "ABC123DEFG",
 		TeamID:        "DEF123GHIJ",

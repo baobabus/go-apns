@@ -184,7 +184,6 @@ func (c *Client) Stop() error {
 	c.state = stateStopping
 	logInfo(c.Id, "Stopping.")
 	close(c.cctl) // stop submitter
-	c.cctl = nil
 	c.mu.Unlock()
 	c.wg.Wait()
 	close(c.out)
@@ -209,9 +208,10 @@ func (c *Client) Kill() error {
 		c.mu.Unlock()
 		return ErrClientAlreadyClosed
 	}
+	wasStopping := c.state == stateStopping
 	c.state = stateTerminating
 	logInfo(c.Id, "Terminating.")
-	if c.cctl != nil {
+	if !wasStopping {
 		close(c.cctl)
 	}
 	close(c.gctl)
@@ -285,6 +285,7 @@ func (c *Client) runSubmitter(wg *sync.WaitGroup) {
 				// Queue is closed and we must do s soft shutdown.
 				// TODO Rework soft shutdown to account for retries.
 				done = true
+				break
 			}
 			c.submit(req)
 		case <-c.cctl:
@@ -302,9 +303,6 @@ func (c *Client) runSubmitter(wg *sync.WaitGroup) {
 }
 
 func (c *Client) submit(req *Request) (rerr error) {
-	if c.state < stateStarting || c.state > stateRunning {
-		return
-	}
 	c.rateCtr.Add(1)
 	// TODO implement ctx timing out and cancellation checks
 	isBlocked := false
