@@ -14,7 +14,7 @@ import (
 
 var (
 	ErrIncompatibleHTTP2Layer = errors.New("http2x: incompatible http2 client library")
-	ErrUnsupportedTransport = errors.New("http2x: unsupported transport layer")
+	ErrUnsupportedTransport   = errors.New("http2x: unsupported transport layer")
 )
 
 // GetMaxConcurrentStreams returns the value of maxConcurrentStreams
@@ -93,10 +93,10 @@ func ptrToFieldValue(v reflect.Value, fieldIndex []int) unsafe.Pointer {
 var http2Compat = true
 
 var clientConn struct {
-	mu []int
+	mu                   []int
 	maxConcurrentStreams []int
-	closed []int
-	goAway []int
+	closed               []int
+	goAway               []int
 }
 
 var transport struct {

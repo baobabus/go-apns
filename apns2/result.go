@@ -15,21 +15,21 @@ type Result struct {
 	Notification *Notification
 
 	// Signer is the one-off signer that was supplied in the push request.
-	Signer       RequestSigner
+	Signer RequestSigner
 
 	// Context is the cancellation context instance passed to the original
 	// push request.
-	Context      context.Context
+	Context context.Context
 
 	// Response represents a result from the APN service. If a push operation
 	// fails prior to communicating with APN servers, Response will be nil and
 	// Err field will have a non-nil value.
-	Response     *Response
+	Response *Response
 
 	// Err, if not nil, is an error encontered while attempting a push.
 	// Note that nil Err does not necessarily indicate a successful attempt.
-	// You must also examine Response for additional status details. 
-	Err          error
+	// You must also examine Response for additional status details.
+	Err error
 }
 
 // IsAccepted returns whether or not the notification was accepted by APN service.

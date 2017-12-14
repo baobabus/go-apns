@@ -126,4 +126,3 @@ func TestNoJitterCappedBackOffTracker(t *testing.T) {
 	d = time.Millisecond
 	assert.InDelta(t, time.Now().Add(d).UnixNano(), s.blackoutEnd().UnixNano(), backOffTesterTimeDelta)
 }
-

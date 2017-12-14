@@ -48,4 +48,3 @@ func TestMovingAcc(t *testing.T) {
 	assert.Equal(t, 1, s.pos)
 	assert.Equal(t, uint64(10), v)
 }
-

@@ -50,7 +50,6 @@ type CommsCfg struct {
 	// is invoked by the remote side with a lower value, the remote request
 	// will be honored if possible.
 	MaxConcurrentStreams uint32
-
 }
 
 // CommsFast is a baseline set of communication settings for situations where

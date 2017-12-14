@@ -19,10 +19,10 @@ func main() {
 
 	// Set up our client
 	client := &apns2.Client{
-		Gateway:  apns2.Gateway.Production,
-		Signer:   &apns2.JWTSigner{
-			KeyID: "ABC123DEFG", // Your key ID
-			TeamID: "DEF123GHIJ", // Your team ID
+		Gateway: apns2.Gateway.Production,
+		Signer: &apns2.JWTSigner{
+			KeyID:      "ABC123DEFG", // Your key ID
+			TeamID:     "DEF123GHIJ", // Your team ID
 			SigningKey: signingKey,
 		},
 		CommsCfg: apns2.CommsFast,
@@ -36,8 +36,8 @@ func main() {
 	}
 
 	// Mock motification and recipients
-	header := &apns2.Header{ Topic: "com.example.Alert" }
-	payload := &apns2.Payload{ APS: &apns2.APS{Alert: "Ping!"} }
+	header := &apns2.Header{Topic: "com.example.Alert"}
+	payload := &apns2.Payload{APS: &apns2.APS{Alert: "Ping!"}}
 	recipients := []string{
 		"00fc13adff785122b4ad28809a3420982341241421348097878e577c991de8f0",
 		"10fc13adff785122b4ad28809a3420982341241421348097878e577c991de8f0",

@@ -3,10 +3,10 @@
 package apns2
 
 import (
-	"errors"
 	"crypto/tls"
 	"crypto/x509"
-  	"net"
+	"errors"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -39,7 +39,7 @@ type HTTPClient struct {
 	addr    string
 	precise bool
 	pollInt time.Duration
-	cfgCap uint32
+	cfgCap  uint32
 
 	mu       sync.Mutex
 	cond     *sync.Cond
@@ -49,8 +49,8 @@ type HTTPClient struct {
 	cnt      uint32
 	closed   bool
 
-	tkr    *time.Ticker
-	ctl    chan struct{}
+	tkr *time.Ticker
+	ctl chan struct{}
 
 	initOnce sync.Once
 }
@@ -61,7 +61,7 @@ type HTTPClient struct {
 // certificate are optional and can be nil.
 func NewHTTPClient(gateway string, commsCfg CommsCfg, cCert *tls.Certificate, rootCA *tls.Certificate) (*HTTPClient, error) {
 	t := &http2.Transport{
-		DialTLS: makeDialer(commsCfg),
+		DialTLS:            makeDialer(commsCfg),
 		DisableCompression: true, // As per Apple spec
 	}
 	tlsConfig := t.TLSClientConfig
@@ -85,7 +85,7 @@ func NewHTTPClient(gateway string, commsCfg CommsCfg, cCert *tls.Certificate, ro
 		certpool := x509.NewCertPool()
 		certpool.AddCert(rCert)
 		tlsConfig.RootCAs = certpool
-  	}
+	}
 	t.TLSClientConfig = tlsConfig
 	url, _ := url.ParseRequestURI(gateway)
 	res := &HTTPClient{
@@ -132,7 +132,7 @@ func (c *HTTPClient) getClientConn() (*http2.ClientConn, error) {
 	return http2x.GetClientConn(c.connPool, c.addr)
 }
 
-// ReservedStream returns a reserved HTTP2Stream in the client's 
+// ReservedStream returns a reserved HTTP2Stream in the client's
 // HTTP/2 connection, or a non-nil error.
 func (c *HTTPClient) ReservedStream(cancel func(<-chan struct{}) error) (*HTTP2Stream, error) {
 	c.initOnce.Do(c.init)

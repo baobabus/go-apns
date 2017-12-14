@@ -26,12 +26,12 @@ var Gateway = struct {
 const RequestRoot = "/3/device/"
 
 var (
-	ErrMissingAuth = errors.New("apns2: authentication is not possible with no client certificate and no signer")
-	ErrClientNotRunning = errors.New("apns2: client processing pipeline not running")
+	ErrMissingAuth          = errors.New("apns2: authentication is not possible with no client certificate and no signer")
+	ErrClientNotRunning     = errors.New("apns2: client processing pipeline not running")
 	ErrClientAlreadyStarted = errors.New("apns2: client processing pipeline already started")
 	ErrClientAlreadyClosed  = errors.New("apns2: client processing pipeline already closed")
-	ErrPushInterrupted = errors.New("apns2: push request interrupted")
-	ErrCanceled = errors.New("apns2: push request canceled")
+	ErrPushInterrupted      = errors.New("apns2: push request interrupted")
+	ErrCanceled             = errors.New("apns2: push request canceled")
 )
 
 // NoSigner can be used where a RequestSigner is required when a push request
@@ -72,15 +72,15 @@ type Client struct {
 	// Gateway is the APN service connection endpoint.
 	// Apple publishes two public endpoints: production and development.
 	// They are preconfigured in Gateway.Production and Gateway.Development.
-	Gateway     string
+	Gateway string
 
 	// CommsCfg contains communication settings to be used by the client.
 	// See CommsCfg type declaration for additional details.
-	CommsCfg    CommsCfg
+	CommsCfg CommsCfg
 
 	// ProcCfg contains autoscaling settings.
 	// See ProcCfg type declaration for additional details.
-	ProcCfg    ProcCfg
+	ProcCfg ProcCfg
 
 	// Certificate, if not nil, is used in the client side configuration
 	// of the TLS connections to APN servers.
@@ -93,14 +93,14 @@ type Client struct {
 	RootCA *tls.Certificate
 
 	// Signer, if not nil, is used to sign individual requests to APN service.
-	Signer      RequestSigner
+	Signer RequestSigner
 
 	// Queue for submitting push requests.
 	//
 	// You can use it directly in your code, especially in select statements
 	// when coordination with other channels is desired.
 	// Alternatively client's Push method can be used.
-	Queue      <-chan *Request
+	Queue <-chan *Request
 
 	// Callback, if not nil, specifies the channel to which the outcome of
 	// the push request executions should be delivered.
@@ -122,13 +122,13 @@ type Client struct {
 	cdone chan struct{} // pipeline done processing signal
 
 	// counter for waits on outbound channel
-	waitCtr  syncx.TickTockCounter
+	waitCtr syncx.TickTockCounter
 	// counter of processed requests
-	rateCtr  syncx.Counter
+	rateCtr syncx.Counter
 }
 
 const (
-	stateInitial  uint = iota
+	stateInitial uint = iota
 	stateStarting
 	stateRunning
 	stateStopping
@@ -249,9 +249,9 @@ func (c *Client) Push(n *Notification, signer RequestSigner, ctx context.Context
 	// Everything else is done asynchronously
 	req := &Request{
 		Notification: n,
-		Signer: signer,
-		Context: ctx,
-		Callback: callback,
+		Signer:       signer,
+		Context:      ctx,
+		Callback:     callback,
 	}
 	err := c.submit(req)
 	return err
@@ -274,9 +274,9 @@ func (c *Client) runSubmitter(wg *sync.WaitGroup) {
 	}
 	c.mu.Unlock()
 	if !done {
-		logInfo(c.Id + "-Submitter", "Running.")
+		logInfo(c.Id+"-Submitter", "Running.")
 	}
-	for ; !done; {
+	for !done {
 		select {
 		case req, _ := <-c.retry:
 			c.submit(req)
@@ -294,14 +294,14 @@ func (c *Client) runSubmitter(wg *sync.WaitGroup) {
 	c.mu.Lock()
 	c.state = stateClosed
 	c.mu.Unlock()
-	logInfo(c.Id + "-Submitter", "Stopped.")
+	logInfo(c.Id+"-Submitter", "Stopped.")
 	c.wg.Done()
 	if wg != nil {
 		wg.Done()
 	}
 }
 
-func (c *Client)submit(req *Request) (rerr error) {
+func (c *Client) submit(req *Request) (rerr error) {
 	if c.state < stateStarting || c.state > stateRunning {
 		return
 	}
@@ -309,7 +309,7 @@ func (c *Client)submit(req *Request) (rerr error) {
 	// TODO implement ctx timing out and cancellation checks
 	isBlocked := false
 	select {
-	case c.out<- req:
+	case c.out <- req:
 	default:
 		isBlocked = true
 	}
@@ -318,7 +318,7 @@ func (c *Client)submit(req *Request) (rerr error) {
 	}
 	c.waitCtr.Tick()
 	select {
-	case c.out<- req:
+	case c.out <- req:
 	case <-c.cctl:
 		rerr = ErrPushInterrupted
 	}

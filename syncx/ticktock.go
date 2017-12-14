@@ -29,7 +29,7 @@ type TickTockCounter uint64
 // gorotines as long as the caller ensures that corresponding Tock call is only
 // made after Tick call.
 func (c *TickTockCounter) Tick() {
-	atomic.AddUint64((*uint64)(c), 1 << 32)
+	atomic.AddUint64((*uint64)(c), 1<<32)
 }
 
 // Tick atomically increments "tock" counter. It is safe for use in concurrent

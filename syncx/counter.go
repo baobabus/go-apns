@@ -26,7 +26,7 @@ func (f *Counter) Add(v uint64) {
 // for use concurrently with Add method.
 // If concurrent calls to Draw are anticipated they must be protected
 // by a mutex.
-func (f *Counter) Draw() (uint64) {
+func (f *Counter) Draw() uint64 {
 	res := atomic.LoadUint64((*uint64)(f))
 	// It's possible for the count to have increased by this point,
 	// but we are only subtracting the value previously read.

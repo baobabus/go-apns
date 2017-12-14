@@ -24,17 +24,17 @@ type ProcCfg struct {
 
 	// MinConns is minimum number of concurrent connections to APN servers
 	// that should be kept open.
-	MinConns   uint32
+	MinConns uint32
 
 	// MaxConns is maximum allowed number of concurrent connections
 	// to APN service.
-	MaxConns   uint32
+	MaxConns uint32
 
 	// MaxRate is the throughput cap specified in notifications per second.
 	// It is not strictly enforced as would be the case with a true rate
 	// limiter. Instead it only prevents additional scaling from taking place
 	// once the specified rate is reached.
-	MaxRate    funit.Measure
+	MaxRate funit.Measure
 
 	// MaxBandwidth is the throughput cap specified in bits per second.
 	// It is not strictly enforced as would be the case with a true rate
@@ -45,7 +45,7 @@ type ProcCfg struct {
 	// Scale specifies the manner of scaling up and winding down.
 	// Three scaling modes come prefefined: Incremental, Exponential and Constant.
 	// See below for more detail.
-	Scale      scale.Scale
+	Scale scale.Scale
 
 	// MinSustain is the minimum duration of time over which the processing
 	// has to experience blocking before a scale-up attemp is made. It is also
@@ -88,18 +88,17 @@ type ProcCfg struct {
 	// Setting HTTP2MetricsRefreshPeriod to 0 or negative value disables
 	// metrics refresh even if UsePreciseMetrics is false.
 	HTTP2MetricsRefreshPeriod time.Duration
-
 }
 
 // MinBlockingProcConfig is a configuration with absolute mimimal processing
 // settings. It only allows a single connection to APN service with no scaling.
 // HTTP/2 layer metrics refresh is set to 500ms to allow proper handling
 // of HTTP/2 streams concurrency without introducing any noticeable overhead.
-var MinBlockingProcConfig =  ProcCfg {
+var MinBlockingProcConfig = ProcCfg{
 	MinConns:                  1,
 	MaxConns:                  1,
-	MaxRate:                   1000/funit.Second,
-	MaxBandwidth:              10*funit.Gigabit/funit.Second,
+	MaxRate:                   1000 / funit.Second,
+	MaxBandwidth:              10 * funit.Gigabit / funit.Second,
 	Scale:                     scale.Constant,
 	AllowHTTP2Incursion:       true,
 	HTTP2MetricsRefreshPeriod: 500 * time.Millisecond,
@@ -107,11 +106,11 @@ var MinBlockingProcConfig =  ProcCfg {
 
 // UnlimitedProcConfig is a configuration with virtually no limit on processing
 // speed and unlimited base 2 exponential scaling.
-var UnlimitedProcConfig = ProcCfg {
+var UnlimitedProcConfig = ProcCfg{
 	MinConns:                  1,
 	MaxConns:                  ^uint32(0),
-	MaxRate:                   10000000/funit.Second,
-	MaxBandwidth:              1*funit.Terabit/funit.Second,
+	MaxRate:                   10000000 / funit.Second,
+	MaxBandwidth:              1 * funit.Terabit / funit.Second,
 	Scale:                     scale.Exponential(2),
 	AllowHTTP2Incursion:       true,
 	HTTP2MetricsRefreshPeriod: 500 * time.Millisecond,
@@ -130,7 +129,7 @@ func (c *ProcCfg) minSustainPollPeriods() uint32 {
 		return ^uint32(0)
 	}
 	res := c.MinSustain / c.PollInterval
-	if c.MinSustain % c.PollInterval > 0 {
+	if c.MinSustain%c.PollInterval > 0 {
 		res++
 	}
 	return uint32(res)
@@ -146,7 +145,7 @@ func (c *ProcCfg) rateAsCount() uint64 {
 		return 0
 	}
 	n := float64(c.minSustainPollPeriods())
-	return uint64(float64(c.MaxRate) * n * float64(c.PollInterval))/uint64(funit.Second.AsDuration())
+	return uint64(float64(c.MaxRate)*n*float64(c.PollInterval)) / uint64(funit.Second.AsDuration())
 }
 
 // bandwidthAsSize returns MaxBandwidth expressed in bytes per adjusted
@@ -159,20 +158,20 @@ func (c *ProcCfg) bandwidthAsSize() uint64 {
 		return 0
 	}
 	n := float64(c.minSustainPollPeriods())
-	return uint64(float64(c.MaxBandwidth/funit.Byte) * n * float64(c.PollInterval))/uint64(funit.Second.AsDuration())
+	return uint64(float64(c.MaxBandwidth/funit.Byte)*n*float64(c.PollInterval)) / uint64(funit.Second.AsDuration())
 }
 
 type governor struct {
-	id string
-	c          *Client
-	ctl        <-chan struct{}
-	done       chan<- struct{}
+	id   string
+	c    *Client
+	ctl  <-chan struct{}
+	done chan<- struct{}
 
-	cfg       ProcCfg
+	cfg ProcCfg
 
 	// minimun number of continuous sampling periods of performance
 	// evaluation need to have an effect on scaling decision
-	minSust    uint32
+	minSust uint32
 
 	// counters of continuous periods with waits and no waits
 	// on inbound and oubound channels
@@ -194,8 +193,8 @@ type governor struct {
 
 	// "callback" channels streamers and launchers
 	// to annouce their completion
-	wExits   chan *streamer
-	lExits   chan *launcher
+	wExits chan *streamer
+	lExits chan *launcher
 
 	// time of last up- or down-scaling completion
 	lastScale time.Time
@@ -373,7 +372,7 @@ func (g *governor) tryWindDown() {
 }
 
 func (g *governor) launchStreamer() {
-	wid := fmt.Sprintf(g.id + "-Streamer-%d", g.nextWId)
+	wid := fmt.Sprintf(g.id+"-Streamer-%d", g.nextWId)
 	l := &launcher{gov: g, id: wid, done: g.lExits, ctl: make(chan struct{})}
 	g.nextWId++
 	g.launchers[l] = l.ctl
@@ -424,14 +423,14 @@ type launcher struct {
 
 func (l *launcher) launch() {
 	w := &streamer{
-		id:   l.id,
-		c:    l.gov.c,
-		gov:  l.gov,
-		in:   l.gov.c.out,
-		out:  l.gov.c.Callback,
+		id:        l.id,
+		c:         l.gov.c,
+		gov:       l.gov,
+		in:        l.gov.c.out,
+		out:       l.gov.c.Callback,
 		warmStart: true,
-		ctl:  make(chan struct{}),
-		done: l.gov.wExits,
+		ctl:       make(chan struct{}),
+		done:      l.gov.wExits,
 	}
 	if l.err = w.start(nil); l.err == nil {
 		l.worker = w
@@ -439,7 +438,7 @@ func (l *launcher) launch() {
 	// read from ctl prevents blocking on done if the governor
 	// was commanded to terminate in the meantime
 	select {
-	case l.done<- l:
+	case l.done <- l:
 	case <-l.ctl:
 	}
 }
@@ -462,7 +461,7 @@ func (g *governor) runRetryForwarder() {
 	cnt := 0
 	// slight buffering on the inbound channel to improve performance
 	g.retry = make(chan *Request, 100)
-	logInfo(g.id + "-RetryForwarder", "Running.")
+	logInfo(g.id+"-RetryForwarder", "Running.")
 	for done := false; !done; {
 		select {
 		case req := <-g.retry:
@@ -480,7 +479,7 @@ func (g *governor) runRetryForwarder() {
 			done = true
 		}
 	}
-	logInfo(g.id + "-RetryForwarder", "Stopped.")
+	logInfo(g.id+"-RetryForwarder", "Stopped.")
 }
 
 func bufferedForwarder(in <-chan *Request, client *Client, ctl <-chan struct{}) {
@@ -492,7 +491,7 @@ func bufferedForwarder(in <-chan *Request, client *Client, ctl <-chan struct{}) 
 				break
 			}
 			select {
-			case client.retry<- req:
+			case client.retry <- req:
 			case <-ctl:
 				done = true
 			}

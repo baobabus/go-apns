@@ -2,4 +2,3 @@
 
 // Package syncx provides extensions to standard synchronization primitives.
 package syncx
-

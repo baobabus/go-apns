@@ -2,4 +2,3 @@
 
 // Package cryptox provides extensions to standard crypto functionality.
 package cryptox
-

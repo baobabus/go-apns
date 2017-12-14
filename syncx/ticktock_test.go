@@ -51,4 +51,3 @@ func TestTickTockFolder(t *testing.T) {
 		t.Fatalf("Bad draw %v %v %v", subj, c, p)
 	}
 }
-

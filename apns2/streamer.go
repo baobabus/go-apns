@@ -17,25 +17,25 @@ import (
 // It streams requests to and handles responses from APN servers while
 // coordinating HTTP/2 stream utilization.
 type streamer struct {
-	id         string
-	c          *Client
-	gov        *governor
-	in         <-chan *Request
-	out        chan<- *Result
-	ctl        chan struct{}
-	done       chan<- *streamer
+	id   string
+	c    *Client
+	gov  *governor
+	in   <-chan *Request
+	out  chan<- *Result
+	ctl  chan struct{}
+	done chan<- *streamer
 
-	warmStart  bool
+	warmStart bool
 
-	startOnce  sync.Once
-	startErr   error
+	startOnce sync.Once
+	startErr  error
 
 	httpClient *HTTPClient
 
 	// counter for waits on outbound channel
-	waitCtr  syncx.TickTockCounter
+	waitCtr syncx.TickTockCounter
 	// cumulative request sizes in bytes
-	sizeCtr  syncx.Counter
+	sizeCtr syncx.Counter
 
 	// wait group for spawned HTTP/2 roundrips
 	wg sync.WaitGroup
@@ -79,7 +79,7 @@ func (s *streamer) run(wg *sync.WaitGroup) {
 	logInfo(s.id, "Running.")
 	for done := false; !done; {
 		select {
-		case req, ok := <- s.in:
+		case req, ok := <-s.in:
 			if !ok {
 				// soft shutdown - wait for pending roundtrips to complete
 				logInfo(s.id, "Stopping.")
@@ -108,7 +108,7 @@ func (s *streamer) run(wg *sync.WaitGroup) {
 	// read from ctl prevents blocking on done if the governor
 	// was commanded to terminate in the meantime
 	select {
-	case s.done<- s:
+	case s.done <- s:
 	case <-s.ctl:
 	}
 	if wg != nil {
@@ -137,10 +137,10 @@ func (s *streamer) exec(req *Request) {
 		s.callBack(req, nil, ErrCanceled)
 		return
 	}
-	var cancel func (done <-chan struct{}) error
+	var cancel func(done <-chan struct{}) error
 	if hasCtx {
 		// Waits for the user to cancel a request's context.
-		cancel = func (done <-chan struct{}) error {
+		cancel = func(done <-chan struct{}) error {
 			ctx := req.Context
 			if ctx.Done() == nil {
 				return nil
@@ -232,10 +232,10 @@ func (s *streamer) submit(req *Request) (*Response, error) {
 func (s *streamer) callBack(req *Request, resp *Response, err error) {
 	res := &Result{
 		Notification: req.Notification,
-		Signer: req.Signer,
-		Context: req.Context,
-		Response: resp,
-		Err: err,
+		Signer:       req.Signer,
+		Context:      req.Context,
+		Response:     resp,
+		Err:          err,
 	}
 	if req.Callback == NoCallback {
 		return
@@ -247,7 +247,7 @@ func (s *streamer) callBack(req *Request, resp *Response, err error) {
 	if tgt != nil && tgt != NoCallback {
 		isBlocked := false
 		select {
-		case tgt<- res:
+		case tgt <- res:
 		default:
 			isBlocked = true
 		}
@@ -256,7 +256,7 @@ func (s *streamer) callBack(req *Request, resp *Response, err error) {
 		}
 		s.waitCtr.Tick()
 		select {
-		case tgt<- res:
+		case tgt <- res:
 		case <-s.ctl:
 		}
 		s.waitCtr.Tock()
@@ -303,16 +303,16 @@ func (s *streamer) isConnUsable(resp *Response, err error) bool {
 	return true
 }
 
-var baseReqWireSizeSize  = uint64(5 + len(RequestRoot))
+var baseReqWireSizeSize = uint64(5 + len(RequestRoot))
 
 // Only an estimate and only based on the fields we use. I.e. cookie sizes
 // are not included.
 func estimatedRequestWireSize(req *http.Request) (res int) {
 	res = len(req.Host) + // this needs to be counted in addition
-	      len(req.URL.RawPath) + // not .EscapedPath() as no escaping is needed in our case
-	      int(req.ContentLength) + // We know we set it
-	      14 + // for "POST " and " HTTP/2.0"
-	      estimatedHeaderWireSize(req.Header)
+		len(req.URL.RawPath) + // not .EscapedPath() as no escaping is needed in our case
+		int(req.ContentLength) + // We know we set it
+		14 + // for "POST " and " HTTP/2.0"
+		estimatedHeaderWireSize(req.Header)
 	return res
 }
 

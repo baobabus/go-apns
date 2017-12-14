@@ -22,7 +22,6 @@ type RequestSigner interface {
 	// Any headers and the request body is guaranteed to have been
 	// set up at this point.
 	SignRequest(r *http.Request) error
-
 }
 
 // DefaultTokenLifeSpan specifies the time duration for which

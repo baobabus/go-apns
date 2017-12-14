@@ -73,4 +73,3 @@ func TestExponential(t *testing.T) {
 	assert.Exactly(t, uint32(9), s.ApplyInverse(12))
 	assert.Exactly(t, uint32(10), s.ApplyInverse(13))
 }
-

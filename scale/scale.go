@@ -88,4 +88,3 @@ func (s Exponential) ApplyInverse(n uint32) uint32 {
 	}
 	return res
 }
-

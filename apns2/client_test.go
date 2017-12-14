@@ -17,11 +17,11 @@ func mustNewClient_Signer_Good(t tester, s *apns2mock.Server) *Client {
 		t.Fatal(err)
 	}
 	res := &Client{
-		Gateway:  s.URL,
-		RootCA:   s.RootCertificate,
-		Signer:   &JWTSigner{
-			KeyID: "ABC123DEFG",
-			TeamID: "DEF123GHIJ",
+		Gateway: s.URL,
+		RootCA:  s.RootCertificate,
+		Signer: &JWTSigner{
+			KeyID:      "ABC123DEFG",
+			TeamID:     "DEF123GHIJ",
 			SigningKey: tsk,
 		},
 		CommsCfg: commsTest_Fast,
@@ -40,7 +40,7 @@ func TestClient_Signer_Good_1(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer c.Stop()
-	tcs := []struct{
+	tcs := []struct {
 		ntf *Notification
 		exp *Result
 		cb  chan *Result
@@ -52,7 +52,7 @@ func TestClient_Signer_Good_1(t *testing.T) {
 					StatusCode:      200,
 					RejectionReason: "",
 				},
-				Err:      nil,
+				Err: nil,
 			},
 			make(chan *Result, 1),
 		},
@@ -60,10 +60,10 @@ func TestClient_Signer_Good_1(t *testing.T) {
 			testNotif_BadDevice,
 			&Result{
 				Response: &Response{
-					StatusCode: 400,
+					StatusCode:      400,
 					RejectionReason: ReasonBadDeviceToken,
 				},
-				Err:      nil,
+				Err: nil,
 			},
 			make(chan *Result, 1),
 		},

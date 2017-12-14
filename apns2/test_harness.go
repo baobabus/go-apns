@@ -13,14 +13,14 @@ var (
 	apnsMockComms_Typical = apns2mock.CommsCfg{
 		MaxConcurrentStreams: 500,
 		MaxConns:             1000,
-		ConnectionDelay:      1*time.Second,
-		ResponseTime:         20*time.Millisecond,
+		ConnectionDelay:      1 * time.Second,
+		ResponseTime:         20 * time.Millisecond,
 	}
 	apnsMockComms_30ms = apns2mock.CommsCfg{
 		MaxConcurrentStreams: 500,
 		MaxConns:             1000,
-		ConnectionDelay:      30*time.Millisecond,
-		ResponseTime:         30*time.Millisecond,
+		ConnectionDelay:      30 * time.Millisecond,
+		ResponseTime:         30 * time.Millisecond,
 	}
 	apnsMockComms_NoDelay = apns2mock.CommsCfg{
 		MaxConcurrentStreams: 500,
@@ -37,7 +37,6 @@ var (
 		KeepAlive:            100 * time.Millisecond,
 		MaxConcurrentStreams: 500,
 	}
-
 )
 
 const testTokenKey_Good = `
@@ -51,13 +50,13 @@ tB5vTjZOOIwnEb70MsWZFIyUFD1P9Gwstz4+akHX7vI8BH6hHmBmfeQl
 var (
 	testNotif_Good = &Notification{
 		Recipient: "00fc13adff785122b4ad28809a3420982341241421348097878e577c991de8f0",
-		Header:    &Header{ Topic: "com.example.Alert" },
-		Payload:   &Payload{ APS: &APS{Alert: "Ping!"} },
+		Header:    &Header{Topic: "com.example.Alert"},
+		Payload:   &Payload{APS: &APS{Alert: "Ping!"}},
 	}
 	testNotif_BadDevice = &Notification{
 		Recipient: "10fc13adff785122b4ad28809a3420982341241421348097878e577c991de8f0",
-		Header:    &Header{ Topic: "com.example.Alert" },
-		Payload:   &Payload{ APS: &APS{Alert: "Ping!"} },
+		Header:    &Header{Topic: "com.example.Alert"},
+		Payload:   &Payload{APS: &APS{Alert: "Ping!"}},
 	}
 )
 
@@ -103,4 +102,3 @@ func mustNewHTTPClient(t tester, s *apns2mock.Server) *HTTPClient {
 	}
 	return res
 }
-

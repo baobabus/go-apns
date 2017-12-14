@@ -12,7 +12,7 @@ func TestGetClientConnNoHTTP2Incursion(t *testing.T) {
 	s := mustNewMockServer(t)
 	defer s.Close()
 	c := mustNewHTTPClient(t, s)
-	cc, err := c.getClientConn(); 
+	cc, err := c.getClientConn()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func TestGetClientConn(t *testing.T) {
 	defer s.Close()
 	c := mustNewHTTPClient(t, s)
 	c.precise = true
-	cc, err := c.getClientConn(); 
+	cc, err := c.getClientConn()
 	if err != nil {
 		t.Fatal(err)
 	}

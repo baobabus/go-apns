@@ -41,8 +41,8 @@ const (
 
 // Ratios
 const (
-	Percent Measure = 0.01
-	BasisPoint      = 0.0001
-	Pct             = Percent
-	BP              = BasisPoint
+	Percent    Measure = 0.01
+	BasisPoint         = 0.0001
+	Pct                = Percent
+	BP                 = BasisPoint
 )

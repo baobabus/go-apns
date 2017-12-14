@@ -33,7 +33,7 @@ func TestJWTSignerDefaults(t *testing.T) {
 	}
 	assert.Exactly(t, DefaultJWTSigningMethod, s.signingMethod)
 	assert.Exactly(t, DefaultTokenLifeSpan, s.tokenLifeSpan)
-	assert.True(t, tk.IssuedAt.Unix() - now.Unix() < 1)
+	assert.True(t, tk.IssuedAt.Unix()-now.Unix() < 1)
 	assert.Exactly(t, tk.IssuedAt.Add(DefaultTokenLifeSpan).Unix(), tk.ExpiresAt.Unix())
 	assert.True(t, auth_test_jwtAsHeader.MatchString(tk.AsHeader))
 }
@@ -57,7 +57,7 @@ func TestJWTSignerCustom(t *testing.T) {
 	}
 	assert.Exactly(t, DefaultJWTSigningMethod, s.signingMethod)
 	assert.Exactly(t, lifespan, s.tokenLifeSpan)
-	assert.True(t, tk.IssuedAt.Unix() - now.Unix() < 1)
+	assert.True(t, tk.IssuedAt.Unix()-now.Unix() < 1)
 	assert.Exactly(t, tk.IssuedAt.Add(lifespan).Unix(), tk.ExpiresAt.Unix())
 	assert.True(t, auth_test_jwtAsHeader.MatchString(tk.AsHeader))
 }

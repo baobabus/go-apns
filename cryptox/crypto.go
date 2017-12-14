@@ -1,17 +1,17 @@
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2016 Adam Jones
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,17 +37,17 @@ import (
 )
 
 const (
-	PEM_X509 string = "CERTIFICATE"
-	PEM_RSA         = "RSA PRIVATE KEY"
-	PEM_PKCS8       = "ENCRYPTED PRIVATE KEY"
-	PEM_PKCS8INF    = "PRIVATE KEY"
+	PEM_X509     string = "CERTIFICATE"
+	PEM_RSA             = "RSA PRIVATE KEY"
+	PEM_PKCS8           = "ENCRYPTED PRIVATE KEY"
+	PEM_PKCS8INF        = "PRIVATE KEY"
 )
 
 var (
-	ErrPKCS8NotPem             = errors.New("PKCS8PrivateKey: invalid .p8 PEM file")
-	ErrPKCS8NotECDSA           = errors.New("PKCS8PrivateKey: key must be of type ecdsa.PrivateKey")
-	ErrPEMMissingPrivateKey    = errors.New("PEM: private key not found")
-	ErrPEMMissingCertificate   = errors.New("PEM: certificate not found")
+	ErrPKCS8NotPem           = errors.New("PKCS8PrivateKey: invalid .p8 PEM file")
+	ErrPKCS8NotECDSA         = errors.New("PKCS8PrivateKey: key must be of type ecdsa.PrivateKey")
+	ErrPEMMissingPrivateKey  = errors.New("PEM: private key not found")
+	ErrPEMMissingCertificate = errors.New("PEM: certificate not found")
 )
 
 // PKCS8PrivateKeyFromFile loads a .p8 certificate from a local file and returns a
