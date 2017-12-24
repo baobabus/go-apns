@@ -67,7 +67,7 @@ func (s Exponential) IsValid() bool {
 }
 
 // Apply scales the supplied value by its factor and returns the result.
-// The result is guaranteed to be greater that the input by at least 1.
+// The result is guaranteed to be greater than the input by at least 1.
 func (s Exponential) Apply(n uint32) uint32 {
 	res := uint32(float32(s) * float32(n))
 	// We must increase by at least 1.
@@ -78,7 +78,7 @@ func (s Exponential) Apply(n uint32) uint32 {
 }
 
 // Apply scales the supplied value by its inverse factor and returns the result.
-// The result is guaranteed to be 0 or to be less that the nonzero input
+// The result is guaranteed to be 0 or to be less than the nonzero input
 // by at least 1.
 func (s Exponential) ApplyInverse(n uint32) uint32 {
 	res := uint32(float32(n) / float32(s))
